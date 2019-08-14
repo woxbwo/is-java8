@@ -4,6 +4,7 @@ import com.is.service.java8.model.Employee;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @ClassName: StartLambdaTest
@@ -100,6 +101,83 @@ public class StartLambdaTest {
         }
         return res;
     }
+
+    /**
+     *@description:
+     * 优化方式一 策略模式
+     *@params:  []
+     *@return:  void
+     **/
+    @Test
+    public void test5(){
+        List<Employee> empsByAge = filterEmp(this.employees, new FilterEmpByAge());
+        for (Employee employee : empsByAge) {
+            System.out.println(employee);
+        }
+        List<Employee> empsBySalary = filterEmp(this.employees, new FilterEmpBySalary());
+        for (Employee employee : empsBySalary) {
+            System.out.println(employee);
+        }
+    }
+
+    List<Employee> filterEmp(List<Employee> emps, MyPredicate<Employee> filter){
+        List<Employee> res = new ArrayList<>();
+        for (Employee emp : emps) {
+            if(filter.test(emp)){
+                res.add(emp);
+            }
+        }
+        return res;
+    }
+
+    /**
+     *@description:
+     * 优化方式二，内名内部类
+     *@params:  []
+     *@return:  void
+     **/
+    @Test
+    public void test6(){
+        List<Employee> filterByAge = filterEmp(this.employees, new MyPredicate<Employee>() {
+            @Override
+            public boolean test(Employee employee) {
+                return employee.getAge() > 35 ? true : false;
+            }
+        });
+
+        List<Employee> filterSalary = filterEmp(this.employees, new MyPredicate<Employee>() {
+            @Override
+            public boolean test(Employee employee) {
+                return employee.getSalary() > 5000 ? true : false;
+            }
+        });
+    }
+
+    /**
+     *@description:
+     * 优化方式三 Lambda 表达式
+     *@params:  []
+     *@return:  void
+     **/
+    @Test
+    public void test7(){
+        List<Employee> filterAge = filterEmp(this.employees, (e) -> e.getAge() > 35);
+        List<Employee> employees = filterEmp(this.employees, (x) -> x.getSalary() > 5000);
+    }
+    /**
+     *@description:
+     * 优化方式四 streamAPI
+     *@params:  []
+     *@return:  void
+     **/
+    @Test
+    public void test8(){
+        List<Employee> list = this.employees.stream().filter((employee -> employee.getAge() > 35)).collect(Collectors.toList());
+        List<Employee> salarys = this.employees.stream().filter((e) -> e.getSalary() > 5000).collect(Collectors.toList());
+    }
+
+
+
 
 
 
